@@ -1,0 +1,658 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Margin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=EB+Garamond:ital@0;1&family=Instrument+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --paper: #f5f0e6;
+  --paper-2: #efe8da;
+  --ink: #2b2723;
+  --ink-2: #6f675d;
+  --ink-3: #a39a8c;
+  --rule: #ded5c4;
+  --accent: #a4502c;
+  --mark: rgba(214, 160, 70, .26);
+  --mark-hot: rgba(214, 160, 70, .5);
+  --mark-edge: rgba(176, 118, 30, .55);
+  --card: #faf6ee;
+  --shadow: 0 1px 2px rgba(60,40,10,.06), 0 12px 32px -12px rgba(60,40,10,.18);
+  --serif: "Cormorant Garamond", "EB Garamond", Georgia, serif;
+  --body: "EB Garamond", Georgia, serif;
+  --ui: "Instrument Sans", -apple-system, system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #191614;
+    --paper-2: #211d1a;
+    --ink: #e9e1d3;
+    --ink-2: #a39a8c;
+    --ink-3: #6d655b;
+    --rule: #2e2924;
+    --accent: #d9885f;
+    --mark: rgba(224, 170, 80, .17);
+    --mark-hot: rgba(224, 170, 80, .36);
+    --mark-edge: rgba(224, 170, 80, .5);
+    --card: #1f1b18;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 12px 32px -12px rgba(0,0,0,.6);
+  }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--paper); color: var(--ink);
+  font-family: var(--body); font-size: 18px; line-height: 1.5;
+  -webkit-font-smoothing: antialiased; min-height: 100vh;
+}
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+::selection { background: var(--mark-hot); }
+
+/* header */
+header {
+  position: sticky; top: 0; z-index: 5;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px clamp(16px, 4vw, 40px);
+  background: linear-gradient(var(--paper) 70%, transparent);
+  font-family: var(--ui); font-size: 13px; letter-spacing: .01em; color: var(--ink-2);
+}
+.left, .right { display: flex; align-items: center; gap: 22px; }
+.ghost { color: var(--ink-2); transition: color .15s; }
+.ghost:hover, .ghost.on { color: var(--ink); }
+.ghost.on { box-shadow: 0 1px 0 var(--ink); }
+.brand { font-family: var(--serif); font-style: italic; font-size: 22px; color: var(--ink); letter-spacing: 0; }
+.poemname { max-width: 18ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.poemname::after { content: " ▾"; font-size: 10px; opacity: .6; }
+.seg { display: flex; gap: 18px; }
+
+/* menu */
+.menu {
+  position: absolute; top: 52px; left: clamp(16px, 4vw, 40px);
+  min-width: 240px; max-width: 320px; padding: 8px;
+  background: var(--card); border: 1px solid var(--rule); border-radius: 10px;
+  box-shadow: var(--shadow); font-family: var(--ui); font-size: 13px;
+}
+.menu[hidden] { display: none; }
+.menu .item { display: flex; justify-content: space-between; gap: 12px; padding: 8px 10px; border-radius: 6px; width: 100%; text-align: left; color: var(--ink-2); }
+.menu .item:hover { background: var(--paper-2); color: var(--ink); }
+.menu .item.cur { color: var(--ink); }
+.menu .item .x { opacity: 0; color: var(--ink-3); }
+.menu .item:hover .x { opacity: 1; }
+.menu .item .x:hover { color: var(--accent); }
+.menu hr { border: 0; border-top: 1px solid var(--rule); margin: 6px 0; }
+
+/* write */
+.write { max-width: 40rem; margin: 6vh auto 12vh; padding: 0 clamp(16px, 4vw, 40px); }
+.title-in {
+  width: 100%; border: 0; outline: 0; background: none; color: var(--ink);
+  font-family: var(--serif); font-style: italic; font-size: 1.5rem; padding: 0 0 .6rem;
+}
+.text-in {
+  width: 100%; min-height: 62vh; border: 0; outline: 0; background: none; resize: none; color: var(--ink);
+  font-family: var(--body); font-size: 1.3rem; line-height: 1.75; padding: 0; white-space: pre-wrap;
+}
+.title-in::placeholder, .text-in::placeholder { color: var(--ink-3); }
+.hint { font-family: var(--ui); font-size: 12px; color: var(--ink-3); margin-top: 1.5rem; }
+
+/* read */
+.read {
+  display: grid; gap: clamp(32px, 5vw, 80px);
+  grid-template-columns: minmax(16px, 1fr) minmax(0, 34rem) 21rem minmax(16px, 1fr);
+  padding-bottom: 20vh;
+}
+.read[hidden], .write[hidden] { display: none; }
+.poem-col { grid-column: 2; padding-top: 4vh; }
+.margin-col { grid-column: 3; padding-top: calc(4vh + 4px); }
+.poem-title { font-family: var(--serif); font-style: italic; font-weight: 400; font-size: 1.45rem; margin: 0 0 1.6rem; color: var(--ink-2); }
+.poem {
+  white-space: pre-wrap; font-family: var(--body); font-size: 1.38rem; line-height: 1.8;
+  tab-size: 4; overflow-wrap: break-word;
+}
+.poem span.m {
+  background: var(--mark); border-radius: 3px; cursor: pointer;
+  box-shadow: 0 1.5px 0 var(--mark-edge); transition: background .15s;
+  -webkit-box-decoration-break: clone; box-decoration-break: clone;
+}
+.poem span.m.hot, .poem span.m.pending { background: var(--mark-hot); }
+.poem span.m.done { background: none; box-shadow: 0 1px 0 var(--rule); }
+.poem span.m.pending { box-shadow: 0 1.5px 0 var(--accent); }
+
+/* margin */
+.margin-col { font-family: var(--ui); font-size: 13.5px; line-height: 1.5; }
+.card {
+  position: relative; padding: 14px 16px 12px; margin-bottom: 14px;
+  background: var(--card); border: 1px solid var(--rule); border-radius: 10px;
+  transition: box-shadow .2s, border-color .2s, opacity .2s;
+}
+.card.hot { box-shadow: var(--shadow); border-color: var(--mark-edge); }
+.card.done { opacity: .55; }
+.card.done .note { text-decoration: line-through; text-decoration-color: var(--ink-3); }
+.quote { font-family: var(--serif); font-style: italic; font-size: 16px; line-height: 1.35; color: var(--ink-2);
+  border-left: 2px solid var(--mark-edge); padding-left: 10px; margin-bottom: 8px;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; white-space: pre-line; }
+.quote.orphan { border-left-color: var(--ink-3); }
+.tag { display: inline-block; font-size: 11px; color: var(--ink-3); margin-bottom: 6px; letter-spacing: .02em; }
+.note { white-space: pre-wrap; color: var(--ink); cursor: text; }
+.acts { display: flex; gap: 16px; margin-top: 10px; font-size: 12px; color: var(--ink-3); opacity: 0; transition: opacity .15s; }
+.card:hover .acts, .card:focus-within .acts, .card.done .acts { opacity: 1; }
+@media (hover: none) { .acts { opacity: 1; } }
+.acts button:hover { color: var(--ink); }
+.acts button.del:hover { color: var(--accent); }
+.card textarea {
+  width: 100%; min-height: 64px; resize: vertical; border: 0; outline: 0; background: none;
+  font: inherit; color: var(--ink); padding: 0;
+}
+.card textarea::placeholder { color: var(--ink-3); }
+.draft { border-color: var(--mark-edge); box-shadow: var(--shadow); }
+.btnrow { display: flex; gap: 14px; align-items: center; margin-top: 8px; font-size: 12px; color: var(--ink-3); }
+.primary { color: var(--paper); background: var(--ink); padding: 5px 12px; border-radius: 99px; font-size: 12px; }
+.primary:hover { opacity: .85; }
+.whole, .showdone { display: block; margin: 6px 2px 0; font-size: 12.5px; color: var(--ink-3); }
+.whole:hover, .showdone:hover { color: var(--ink); }
+.empty { color: var(--ink-3); font-family: var(--serif); font-style: italic; font-size: 17px; line-height: 1.45; margin: 4px 2px 16px; }
+.sect { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); margin: 22px 2px 10px; }
+
+/* selection pop */
+#pop {
+  position: absolute; z-index: 20; transform: translate(-50%, 8px);
+  background: var(--ink); color: var(--paper); border-radius: 99px;
+  font-family: var(--ui); font-size: 12px; padding: 6px 13px; box-shadow: var(--shadow);
+  animation: rise .14s ease-out;
+}
+#pop[hidden] { display: none; }
+@keyframes rise { from { opacity: 0; transform: translate(-50%, 14px); } }
+
+/* export sheet */
+dialog {
+  border: 1px solid var(--rule); background: var(--paper); color: var(--ink);
+  border-radius: 14px; padding: 0; width: min(640px, calc(100vw - 32px)); box-shadow: var(--shadow);
+}
+dialog::backdrop { background: rgba(20, 14, 8, .38); backdrop-filter: blur(3px); }
+.sheet { padding: 24px 26px 22px; font-family: var(--ui); font-size: 13px; }
+.sheet h2 { font-family: var(--serif); font-style: italic; font-weight: 400; font-size: 24px; margin: 0 0 4px; }
+.sheet p { margin: 0 0 14px; color: var(--ink-2); }
+.sheet textarea {
+  width: 100%; height: 340px; resize: vertical; padding: 14px 16px; border: 1px solid var(--rule); border-radius: 10px;
+  background: var(--card); color: var(--ink); font: 14px/1.55 ui-monospace, "SF Mono", Menlo, monospace; outline: 0;
+}
+.sheet textarea:focus { border-color: var(--mark-edge); }
+.sheet .foot { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; }
+.sheet label { color: var(--ink-2); display: flex; gap: 8px; align-items: center; cursor: pointer; }
+.sheet .foot > div { display: flex; gap: 18px; align-items: center; }
+
+/* toast */
+#toast {
+  position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%); z-index: 30;
+  background: var(--ink); color: var(--paper); font-family: var(--ui); font-size: 13px;
+  padding: 9px 16px; border-radius: 99px; box-shadow: var(--shadow); display: flex; gap: 14px;
+  transition: opacity .25s, transform .25s;
+}
+#toast[hidden] { display: none; }
+#toast button { text-decoration: underline; opacity: .8; }
+
+@media (max-width: 980px) {
+  .read { grid-template-columns: 16px minmax(0, 1fr) 16px; gap: 0; }
+  .poem-col, .margin-col { grid-column: 2; }
+  .margin-col { padding-top: 40px; }
+  .poem { font-size: 1.25rem; }
+  .right { gap: 16px; }
+  .brand { display: none; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="left">
+    <button class="ghost poemname" id="poemBtn" aria-haspopup="true"></button>
+  </div>
+  <div class="right">
+    <div class="seg">
+      <button class="ghost" id="modeWrite">Write</button>
+      <button class="ghost" id="modeRead">Read</button>
+    </div>
+    <button class="ghost" id="notesBtn">Notes for AI</button>
+    <button class="ghost" id="copyBtn">Copy poem</button>
+  </div>
+</header>
+<div class="menu" id="menu" hidden></div>
+
+<main>
+  <section class="write" id="write" hidden>
+    <input class="title-in" id="titleIn" placeholder="Title" autocomplete="off" spellcheck="false">
+    <textarea class="text-in" id="textIn" placeholder="Paste a poem here…" spellcheck="false"></textarea>
+    <div class="hint">Saved as you type. Switch to Read to sit with it and leave notes.</div>
+  </section>
+
+  <section class="read" id="read" hidden>
+    <div class="poem-col">
+      <h1 class="poem-title" id="poemTitle"></h1>
+      <div class="poem" id="poem"></div>
+    </div>
+    <aside class="margin-col" id="margin"></aside>
+  </section>
+</main>
+
+<button id="pop" hidden>Comment</button>
+
+<dialog id="sheet">
+  <div class="sheet">
+    <h2>Notes for an AI</h2>
+    <p>The poem and your notes, as plain text. Edit anything before you copy it.</p>
+    <textarea id="sheetText" spellcheck="false"></textarea>
+    <div class="foot">
+      <label><input type="checkbox" id="inclResolved"> Include resolved</label>
+      <div>
+        <button class="ghost" id="sheetClose">Close</button>
+        <button class="primary" id="sheetCopy">Copy</button>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<div id="toast" hidden></div>
+
+<script>
+(() => {
+const KEY = 'margin.poems.v1';
+const $ = id => document.getElementById(id);
+const uid = () => Math.random().toString(36).slice(2, 9);
+const blank = () => ({ id: uid(), title: '', text: '', comments: [], updated: Date.now() });
+
+let S = load();
+let mode = cur().text.trim() ? 'read' : 'write';
+let draft = null;          // {start,end,quote} | {general:true}
+let editing = null;        // comment id being edited
+let showDone = false;
+let lastDeleted = null;
+
+function load() {
+  try {
+    const s = JSON.parse(localStorage.getItem(KEY));
+    if (s && s.poems && s.poems.length) return s;
+  } catch (e) {}
+  const p = blank();
+  return { poems: [p], current: p.id };
+}
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {}
+}
+function cur() { return S.poems.find(p => p.id === S.current) || S.poems[0]; }
+function nameOf(p) {
+  return p.title.trim() || (p.text.trim().split('\n')[0] || '').slice(0, 40) || 'Untitled';
+}
+
+/* keep comments pinned to their quoted passage after the poem is edited */
+function reanchor(p) {
+  for (const c of p.comments) {
+    if (c.general) continue;
+    if (c.start >= 0 && p.text.slice(c.start, c.end) === c.quote) continue;
+    let best = -1, i = p.text.indexOf(c.quote);
+    while (i !== -1) {
+      if (best === -1 || Math.abs(i - c.start) < Math.abs(best - c.start)) best = i;
+      i = p.text.indexOf(c.quote, i + 1);
+    }
+    c.start = best;
+    c.end = best === -1 ? -1 : best + c.quote.length;
+  }
+}
+
+/* ---------- mode ---------- */
+function setMode(m) {
+  if (m === 'read' && !cur().text.trim()) m = 'write';
+  if (mode === 'write' && m === 'read') reanchor(cur());
+  mode = m; draft = null; editing = null;
+  render();
+  if (m === 'write') { const t = $('textIn'); t.focus(); }
+}
+
+function render() {
+  const p = cur();
+  $('poemBtn').textContent = nameOf(p);
+  $('write').hidden = mode !== 'write';
+  $('read').hidden = mode !== 'read';
+  $('modeWrite').classList.toggle('on', mode === 'write');
+  $('modeRead').classList.toggle('on', mode === 'read');
+  if (mode === 'write') {
+    if ($('titleIn').value !== p.title) $('titleIn').value = p.title;
+    if ($('textIn').value !== p.text) $('textIn').value = p.text;
+    sizeText();
+  } else {
+    renderPoem();
+    renderMargin();
+  }
+  hidePop();
+}
+
+function sizeText() {
+  const t = $('textIn');
+  t.style.height = 'auto';
+  t.style.height = Math.max(t.scrollHeight, window.innerHeight * 0.62) + 'px';
+}
+
+/* ---------- poem with highlights ---------- */
+function renderPoem() {
+  const p = cur(), el = $('poem');
+  $('poemTitle').textContent = p.title.trim();
+  $('poemTitle').hidden = !p.title.trim();
+  const spans = [];
+  for (const c of p.comments) {
+    if (c.general || c.start < 0) continue;
+    if (c.resolved && !showDone) continue;
+    spans.push({ s: c.start, e: c.end, id: c.id, done: c.resolved });
+  }
+  if (draft && !draft.general) spans.push({ s: draft.start, e: draft.end, id: 'draft', pending: true });
+  const cuts = new Set([0, p.text.length]);
+  spans.forEach(x => { cuts.add(x.s); cuts.add(x.e); });
+  const pts = [...cuts].filter(n => n >= 0 && n <= p.text.length).sort((a, b) => a - b);
+  el.textContent = '';
+  for (let i = 0; i < pts.length - 1; i++) {
+    const a = pts[i], b = pts[i + 1], chunk = p.text.slice(a, b);
+    const cover = spans.filter(x => x.s <= a && x.e >= b);
+    if (!cover.length) { el.appendChild(document.createTextNode(chunk)); continue; }
+    const m = document.createElement('span');
+    m.className = 'm' + (cover.every(x => x.done) ? ' done' : '') + (cover.some(x => x.pending) ? ' pending' : '');
+    m.dataset.ids = cover.map(x => x.id).join(' ');
+    m.textContent = chunk;
+    el.appendChild(m);
+  }
+}
+
+$('poem').addEventListener('click', e => {
+  const m = e.target.closest('.m');
+  if (!m || !getSelection().isCollapsed) return;
+  const id = m.dataset.ids.split(' ').find(x => x !== 'draft');
+  const card = id && document.querySelector(`.card[data-id="${id}"]`);
+  if (card) { card.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); flash(id); }
+});
+$('poem').addEventListener('mouseover', e => {
+  const m = e.target.closest('.m'); if (!m) return;
+  m.dataset.ids.split(' ').forEach(id => hot(id, true));
+});
+$('poem').addEventListener('mouseout', e => {
+  const m = e.target.closest('.m'); if (!m) return;
+  m.dataset.ids.split(' ').forEach(id => hot(id, false));
+});
+function hot(id, on) {
+  document.querySelectorAll(`.card[data-id="${id}"]`).forEach(c => c.classList.toggle('hot', on));
+  document.querySelectorAll(`.m[data-ids~="${id}"]`).forEach(c => c.classList.toggle('hot', on));
+}
+function flash(id) { hot(id, true); setTimeout(() => hot(id, false), 1100); }
+
+/* ---------- selecting a passage ---------- */
+function selectionInPoem() {
+  const sel = getSelection(), el = $('poem');
+  if (!sel.rangeCount || sel.isCollapsed) return null;
+  const r = sel.getRangeAt(0);
+  if (!el.contains(r.startContainer) || !el.contains(r.endContainer)) return null;
+  const pre = document.createRange();
+  pre.setStart(el, 0); pre.setEnd(r.startContainer, r.startOffset);
+  let start = pre.toString().length;
+  let end = start + r.toString().length;
+  const t = cur().text;
+  while (start < end && /\s/.test(t[start])) start++;
+  while (end > start && /\s/.test(t[end - 1])) end--;
+  if (end <= start) return null;
+  return { start, end, quote: t.slice(start, end), rect: r.getBoundingClientRect() };
+}
+let popSel = null;
+function showPop() {
+  if (mode !== 'read' || draft) return hidePop();
+  const s = selectionInPoem();
+  if (!s) return hidePop();
+  popSel = s;
+  const pop = $('pop');
+  pop.hidden = false;
+  pop.style.left = (s.rect.left + s.rect.width / 2 + scrollX) + 'px';
+  pop.style.top = (s.rect.bottom + scrollY) + 'px';
+}
+function hidePop() { $('pop').hidden = true; popSel = null; }
+document.addEventListener('selectionchange', () => { clearTimeout(showPop.t); showPop.t = setTimeout(showPop, 120); });
+$('pop').addEventListener('mousedown', e => e.preventDefault());
+$('pop').addEventListener('click', () => {
+  if (!popSel) return;
+  draft = { start: popSel.start, end: popSel.end, quote: popSel.quote };
+  getSelection().removeAllRanges();
+  hidePop(); renderPoem(); renderMargin(true);
+});
+
+/* ---------- margin ---------- */
+function el(tag, cls, text) {
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (text != null) n.textContent = text;
+  return n;
+}
+
+function renderMargin(focusDraft) {
+  const p = cur(), m = $('margin');
+  m.textContent = '';
+  const anchored = p.comments.filter(c => !c.general).sort((a, b) => (a.start < 0) - (b.start < 0) || a.start - b.start);
+  const general = p.comments.filter(c => c.general);
+  const open = c => !c.resolved;
+  const visible = c => showDone || open(c);
+
+  if (draft && !draft.general) m.appendChild(draftCard());
+  anchored.filter(visible).forEach(c => m.appendChild(card(c)));
+
+  if (general.some(visible) || (draft && draft.general)) {
+    m.appendChild(el('div', 'sect', 'The whole poem'));
+    if (draft && draft.general) m.appendChild(draftCard());
+    general.filter(visible).forEach(c => m.appendChild(card(c)));
+  }
+
+  if (!p.comments.some(open) && !draft) {
+    m.appendChild(el('div', 'empty', 'Select any words to leave a note.'));
+  }
+  if (!draft) {
+    const w = el('button', 'whole', '+ A note on the whole poem');
+    w.onclick = () => { draft = { general: true }; renderMargin(true); };
+    m.appendChild(w);
+  }
+  const done = p.comments.filter(c => c.resolved).length;
+  if (done) {
+    const b = el('button', 'showdone', showDone ? 'Hide resolved' : `Show ${done} resolved`);
+    b.onclick = () => { showDone = !showDone; renderPoem(); renderMargin(); };
+    m.appendChild(b);
+  }
+  if (focusDraft) { const t = m.querySelector('.draft textarea'); if (t) t.focus(); }
+}
+
+function draftCard() {
+  const c = el('div', 'card draft');
+  c.dataset.id = 'draft';
+  if (!draft.general) c.appendChild(el('div', 'quote', draft.quote));
+  const t = el('textarea');
+  t.placeholder = draft.general ? 'A thought about the poem as a whole…' : 'What are you thinking?';
+  c.appendChild(t);
+  const row = el('div', 'btnrow');
+  const ok = el('button', 'primary', 'Add');
+  const no = el('button', 'ghost', 'Cancel');
+  const commit = () => {
+    const note = t.value.trim();
+    if (!note) return cancel();
+    const p = cur();
+    p.comments.push(draft.general
+      ? { id: uid(), general: true, note, resolved: false, created: Date.now() }
+      : { id: uid(), start: draft.start, end: draft.end, quote: draft.quote, note, resolved: false, created: Date.now() });
+    p.updated = Date.now(); save();
+    draft = null; renderPoem(); renderMargin();
+  };
+  const cancel = () => { draft = null; renderPoem(); renderMargin(); };
+  ok.onclick = commit; no.onclick = cancel;
+  t.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); commit(); }
+    if (e.key === 'Escape') cancel();
+  });
+  row.append(ok, no, el('span', '', '⌘↵'));
+  c.appendChild(row);
+  return c;
+}
+
+function card(c) {
+  const n = el('div', 'card' + (c.resolved ? ' done' : ''));
+  n.dataset.id = c.id;
+  const orphan = !c.general && c.start < 0;
+  if (!c.general) {
+    if (orphan) n.appendChild(el('div', 'tag', 'This passage has changed'));
+    n.appendChild(el('div', 'quote' + (orphan ? ' orphan' : ''), c.quote));
+  }
+  if (editing === c.id) {
+    const t = el('textarea'); t.value = c.note;
+    n.appendChild(t);
+    const row = el('div', 'btnrow');
+    const ok = el('button', 'primary', 'Save'), no = el('button', 'ghost', 'Cancel');
+    const commit = () => { const v = t.value.trim(); if (v) { c.note = v; save(); } editing = null; renderMargin(); };
+    ok.onclick = commit; no.onclick = () => { editing = null; renderMargin(); };
+    t.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); commit(); }
+      if (e.key === 'Escape') { editing = null; renderMargin(); }
+    });
+    row.append(ok, no); n.appendChild(row);
+    setTimeout(() => { t.focus(); t.setSelectionRange(t.value.length, t.value.length); });
+    return n;
+  }
+  const note = el('div', 'note', c.note);
+  note.title = 'Click to edit';
+  note.onclick = () => { editing = c.id; renderMargin(); };
+  n.appendChild(note);
+  const acts = el('div', 'acts');
+  const res = el('button', '', c.resolved ? 'Reopen' : 'Resolve');
+  res.onclick = () => { c.resolved = !c.resolved; save(); renderPoem(); renderMargin(); };
+  const del = el('button', 'del', 'Delete');
+  del.onclick = () => {
+    const p = cur();
+    const i = p.comments.indexOf(c);
+    lastDeleted = { pid: p.id, c, i };
+    p.comments.splice(i, 1); save();
+    renderPoem(); renderMargin();
+    toast('Note deleted', 'Undo', () => {
+      const q = S.poems.find(x => x.id === lastDeleted.pid);
+      if (q) { q.comments.splice(lastDeleted.i, 0, lastDeleted.c); save(); if (cur() === q && mode === 'read') { renderPoem(); renderMargin(); } }
+    });
+  };
+  acts.append(res, del); n.appendChild(acts);
+  n.addEventListener('mouseenter', () => hot(c.id, true));
+  n.addEventListener('mouseleave', () => hot(c.id, false));
+  return n;
+}
+
+/* ---------- poems menu ---------- */
+function renderMenu() {
+  const menu = $('menu'); menu.textContent = '';
+  S.poems.slice().sort((a, b) => b.updated - a.updated).forEach(p => {
+    const b = el('button', 'item' + (p.id === S.current ? ' cur' : ''));
+    b.appendChild(el('span', '', nameOf(p)));
+    const x = el('span', 'x', '×'); x.title = 'Delete poem';
+    x.onclick = e => {
+      e.stopPropagation();
+      if (!confirm(`Delete “${nameOf(p)}” and its notes? This can’t be undone.`)) return;
+      S.poems = S.poems.filter(q => q.id !== p.id);
+      if (!S.poems.length) S.poems.push(blank());
+      if (S.current === p.id) { S.current = S.poems[0].id; mode = cur().text.trim() ? 'read' : 'write'; draft = null; }
+      save(); render(); renderMenu();
+    };
+    b.appendChild(x);
+    b.onclick = () => { S.current = p.id; mode = p.text.trim() ? 'read' : 'write'; draft = null; save(); menu.hidden = true; render(); };
+    menu.appendChild(b);
+  });
+  menu.appendChild(document.createElement('hr'));
+  const nw = el('button', 'item', '+ New poem');
+  nw.onclick = () => {
+    const p = blank(); S.poems.push(p); S.current = p.id; mode = 'write'; draft = null;
+    save(); menu.hidden = true; render();
+  };
+  menu.appendChild(nw);
+}
+$('poemBtn').onclick = e => { e.stopPropagation(); const m = $('menu'); renderMenu(); m.hidden = !m.hidden; };
+document.addEventListener('click', e => { if (!e.target.closest('#menu')) $('menu').hidden = true; });
+
+/* ---------- write inputs ---------- */
+$('titleIn').addEventListener('input', e => { const p = cur(); p.title = e.target.value; p.updated = Date.now(); save(); $('poemBtn').textContent = nameOf(p); });
+$('textIn').addEventListener('input', e => { const p = cur(); p.text = e.target.value.replace(/\r\n?/g, '\n'); p.updated = Date.now(); save(); $('poemBtn').textContent = nameOf(p); sizeText(); });
+$('modeWrite').onclick = () => setMode('write');
+$('modeRead').onclick = () => setMode('read');
+
+/* ---------- copy & export ---------- */
+async function copy(text) {
+  try { await navigator.clipboard.writeText(text); return true; } catch (e) {}
+  const t = document.createElement('textarea');
+  t.value = text; t.style.position = 'fixed'; t.style.opacity = '0';
+  document.body.appendChild(t); t.select();
+  let ok = false; try { ok = document.execCommand('copy'); } catch (e) {}
+  t.remove(); return ok;
+}
+function poemText(p) { return (p.title.trim() ? p.title.trim() + '\n\n' : '') + p.text.replace(/\s+$/, ''); }
+$('copyBtn').onclick = async () => {
+  const p = cur();
+  if (!p.text.trim()) return toast('Nothing to copy yet');
+  toast(await copy(poemText(p)) ? 'Poem copied' : 'Couldn’t copy — select and copy it by hand');
+};
+
+function notesExport(includeDone) {
+  const p = cur(); reanchor(p);
+  const list = p.comments.filter(c => includeDone || !c.resolved);
+  const lineOf = o => p.text.slice(0, o).split('\n').length;
+  const anchored = list.filter(c => !c.general).sort((a, b) => (a.start < 0) - (b.start < 0) || a.start - b.start);
+  const general = list.filter(c => c.general);
+  const out = [];
+  out.push('Here is a poem I’m working on, followed by my notes to myself while reading it. Please use them as context for our conversation.');
+  out.push('');
+  out.push('--- POEM ---');
+  out.push(poemText(p));
+  out.push('');
+  out.push('--- MY NOTES ---');
+  if (!list.length) out.push('(none)');
+  let n = 1;
+  for (const c of anchored) {
+    let where = '';
+    if (c.start >= 0) {
+      const a = lineOf(c.start), b = lineOf(c.end);
+      where = (a === b ? `line ${a}` : `lines ${a}–${b}`) + ', ';
+    }
+    const q = c.quote.replace(/\s*\n\s*/g, ' / ');
+    out.push(`${n++}. (${where}“${q}”)${c.resolved ? ' [resolved]' : ''}`);
+    out.push('   ' + c.note.replace(/\n/g, '\n   '));
+  }
+  for (const c of general) {
+    out.push(`${n++}. (about the whole poem)${c.resolved ? ' [resolved]' : ''}`);
+    out.push('   ' + c.note.replace(/\n/g, '\n   '));
+  }
+  return out.join('\n');
+}
+function fillSheet() { $('sheetText').value = notesExport($('inclResolved').checked); }
+$('notesBtn').onclick = () => {
+  if (!cur().text.trim()) return toast('Write or paste a poem first');
+  fillSheet(); $('sheet').showModal();
+};
+$('inclResolved').onchange = fillSheet;
+$('sheetClose').onclick = () => $('sheet').close();
+$('sheet').addEventListener('click', e => { if (e.target === $('sheet')) $('sheet').close(); });
+$('sheetCopy').onclick = async () => {
+  const ok = await copy($('sheetText').value);
+  $('sheet').close();
+  toast(ok ? 'Copied — paste it to your AI' : 'Couldn’t copy — select and copy it by hand');
+};
+
+/* ---------- toast ---------- */
+function toast(msg, actionLabel, action) {
+  const t = $('toast'); t.textContent = ''; t.hidden = false;
+  t.appendChild(el('span', '', msg));
+  if (actionLabel) {
+    const b = el('button', '', actionLabel);
+    b.onclick = () => { action(); t.hidden = true; };
+    t.appendChild(b);
+  }
+  clearTimeout(toast.t);
+  toast.t = setTimeout(() => { t.hidden = true; }, actionLabel ? 6000 : 2200);
+}
+
+window.addEventListener('resize', () => { if (mode === 'write') sizeText(); });
+render();
+})();
+</script>
+</body>
+</html>
